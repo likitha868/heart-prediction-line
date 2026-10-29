@@ -1,0 +1,41 @@
+import streamlit as st
+import joblib
+import numpy as np
+
+# Load the trained model
+model = joblib.load('model.pkl')
+
+# Page Configuration
+st.set_page_config(page_title="House Price Predictor", page_icon="🏠", layout="centered")
+
+# App Title and Description
+st.title("🏠 California House Price Prediction App")
+st.write("This application uses a Machine Learning model (Random Forest) to predict median house values based on input features.")
+
+st.divider()
+
+# User Input Form
+st.subheader("Enter Property Details:")
+
+# Creating input sliders/number fields
+med_inc = st.number_input("Median Income (in tens of thousands)", min_value=0.0, max_value=15.0, value=3.5)
+house_age = st.slider("House Age (Years)", min_value=1, max_value=50, value=20)
+ave_rooms = st.number_input("Average Rooms per Household", min_value=1.0, max_value=15.0, value=5.0)
+ave_bedrms = st.number_input("Average Bedrooms per Household", min_value=0.5, max_value=5.0, value=1.0)
+
+# Prediction Button
+if st.button("Predict Price", type="primary"):
+    # Prepare input array
+    input_data = np.array([[med_inc, house_age, ave_rooms, ave_bedrms]])
+    
+    # Make prediction
+    prediction = model.predict(input_data)
+    
+    # Display result (Multiply by 100,000 for actual dollar representation based on dataset)
+    price_val = prediction[0] * 100000
+    
+    st.success(f"Estimated House Price: ${price_val:,.2f}")
+
+# Footer
+st.markdown("---")
+st.caption("Built with Python, Scikit-Learn, and Streamlit.")
